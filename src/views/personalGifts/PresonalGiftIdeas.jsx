@@ -15,9 +15,10 @@ const PersonalGiftIdeas = () => {
 		userInput: Yup.string().required("You must enter characters"),
 	});
 
-	const getGifts = async (gender, age_range, tags) => {
-		const res = await axios.get(
-			`https://staging-vendors.giftly.me/api/custom-search-products?gender=${gender}&age_range=${age_range}&tags[]=${tags}`
+	const getGifts = async (gender, age_range, data) => {
+		const res = await axios.post(
+			`https://staging-vendors.giftly.me/api/custom-search-products?gender=${gender}&age_range=${age_range}`,
+			data
 		);
 		return res.data;
 	};
@@ -29,15 +30,14 @@ const PersonalGiftIdeas = () => {
 				"https://testgift-aitool.postpaddy.com/test_project",
 				{ description: values.userInput }
 			);
-			console.log(aiRes.data);
+console.log(aiRes.data)
 			const ageRange = aiRes.data?.age_range;
 			const gender = aiRes.data?.gender;
 			const category =
-				aiRes.data?.top_4_gifts.join(",") ||
-				aiRes.data?.top_4_gift_categories.join(",");
-			const resGiftsData = await getGifts(gender, ageRange, category);
+				aiRes.data?.top_4_gifts || aiRes.data?.top_4_gift_categories;
+			const resGiftsData = await getGifts(gender, ageRange, {tags: category});
 			setGiftIdeasList(resGiftsData.data);
-
+console.log(resGiftsData)
 			setSubmitting(false);
 			setLoading(false);
 		} catch (error) {
